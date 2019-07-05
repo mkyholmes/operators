@@ -1,0 +1,57 @@
+---
+- name: login to OpenShift cluster in MGT
+  shell: "oc login {{ ocp_host }} -u {{ ocp_user }} -p {{ ocp_pw }}"
+
+- name: create the {{ twistlock_project_name}}
+  shell: "oc new-project {{ twistlock_project_name }}"
+  register: twistlock
+  failed_when: "'ERROR' in twistlock.stdout"
+
+- name: create install dir {{ install_dir }} for twistlock tarball
+  file:
+    path: "{{ install_dir }}"
+    state: directory
+    mode: 0755
+
+- name: unpack the twistlock tarball on ocp master
+  unarchive:
+    src: "files/{{ twistlock_tarball }}"
+    dest: "{{ install_dir }}"
+
+- name: add policy to allow run as anyuid
+  shell: "oc adm policy add-scc-to-user anyuid -z default -n {{ twistlock_project_name }}"
+
+- name: push the twistlock ocp objects to an ocp master
+  template: 
+    src: "templates/{{ item }}"
+    dest: "{{ install_dir }}"
+  with_items:
+  - "{{ twistlock_ocp_objects }}"
+
+- name: push the twistlock script to an ocp master
+  template: 
+    src: "templates/{{ twistlock_script }}"
+    dest: "{{ install_dir }}/twistlock-openshift.sh"
+    mode: 0755
+
+- name: oc create the twistlock console route
+  shell: " oc process -f {{ item }} -n {{ twistlock_project_name }} | oc create -f -"
+  args:
+    chdir: "{{ install_dir }}"
+  register: twistlockobjects
+  failed_when: "'FAILED' in twistlockobjects.stdout"
+  with_items:
+  - "{{ twistlock_ocp_objects }}"
+
+- name: add policy to grant privileged status to twistlock-console service account
+  shell: "oc adm policy add-scc-to-user privileged -z twistlock-console -n {{ twistlock_project_name }}"
+
+- name: add policy to grant privileged status to twistlock-service service account
+  shell: "oc adm policy add-scc-to-user privileged -z twistlock-service -n {{ twistlock_project_name }}"
+
+- name: run twistlock-openshift.sh on the ocp master 
+  shell: "./twistlock-openshift.sh"
+  args:
+    chdir: "{{ install_dir }}"
+  register: twistlockopenshift
+  failed_when: "'FAILED' in twistlockopenshift.stdout"

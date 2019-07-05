@@ -1,0 +1,7 @@
+---
+- name: deploy and configure twistlock
+  become: true
+  become_user: root
+  hosts: all
+  roles:
+  - twistlock

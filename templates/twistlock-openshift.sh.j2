@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Constants
+TWISTLOCK_PUBLIC_REGISTRY="{{ twistlock_public_registry | default('registry.twistlock.com') }}"
+TWISTLOCK_VERSION="18_11_96"
+TWISTLOCK_RELEASE_URL="https://twistlock.example.com/releases/twistlock_2_5_99.tar.gz" 
+TWISTLOCK_NAMESPACE="{{ twistlock_project_name }}"
+ACCESS_TOKEN="{{ twistlock_access_token }}"
+TWISTLOCK_LICENSE="{{ twistlock_license_key }}"
+TWISTLOCK_EXTERNAL_ROUTE="{{ twistlock_external_route }}"
+TWISTLOCK_CONSOLE_USER="{{ twistlock_console_user }}"
+TWISTLOCK_CONSOLE_PASSWORD="{{ twistlock_console_password }}"
+STORAGE_CLASS="{{ storage_class | default('glusterfs-storage') }}"
+
+IMAGE_REGISTRY_EXTERNAL=$(oc get route docker-registry -n default | awk '{print $2}' | tail -n +2)
+IMAGE_REGISTRY_INTERNAL="{{ docker_registry }}"
+IMAGE_REGISTRY_ADDRESS="$IMAGE_REGISTRY_INTERNAL/twistlock/console:console_$TWISTLOCK_VERSION"
+
+## Set up ImageStream pass-thru to be able to pull the container image from TwistLock's registry
+oc create secret docker-registry twistlock-registry --docker-server=registry.twistlock.com --docker-username=twistlock --docker-password=${ACCESS_TOKEN} --docker-email=customer@example.com
+
+{{ install_dir }}/linux/twistcli console export openshift --namespace "$TWISTLOCK_NAMESPACE" --storage-class "${STORAGE_CLASS}" --image-name "$IMAGE_REGISTRY_ADDRESS" --orchestration-cli "oc" 
+oc create -f {{ install_dir }}/twistlock_console.yaml 
+
+# wait for console to be ready to serve endpoints
+sleep 45
+
+# set Twistlock console user/pass
+if ! curl -k -H 'Content-Type: application/json' -X POST \
+     -d "{\"username\": \"$TWISTLOCK_CONSOLE_USER\", \"password\": \"$TWISTLOCK_CONSOLE_PASSWORD\"}" \
+     https://$TWISTLOCK_EXTERNAL_ROUTE/api/v1/signup; then
+    exit 1
+fi
+
+# Set Twistlock license. Using default user/pass
+if ! curl -k \
+  -u $TWISTLOCK_CONSOLE_USER:$TWISTLOCK_CONSOLE_PASSWORD \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d "{\"key\": \"$TWISTLOCK_LICENSE\"}" \
+  https://$TWISTLOCK_EXTERNAL_ROUTE/api/v1/settings/license; then 
+    exit 1
+fi
+
+# deploy the defenders
+{{ install_dir}}/linux/twistcli defender export openshift --address https://$TWISTLOCK_EXTERNAL_ROUTE --cluster-address $(oc get service twistlock-console -n $TWISTLOCK_NAMESPACE | awk '{print $3}' | tail -n +2) --namespace $TWISTLOCK_NAMESPACE --image-name $IMAGE_REGISTRY_INTERNAL/twistlock/defender:defender_$TWISTLOCK_VERSION --user $TWISTLOCK_CONSOLE_USER --password $TWISTLOCK_CONSOLE_PASSWORD echo "$daemonset_file" 
+oc create -f {{ install_dir }}/daemonset.yaml
