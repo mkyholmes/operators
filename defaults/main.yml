@@ -1,5 +1,5 @@
 ocp_user: 'kritchie'
-ocp_pw: 'redhat123'
+ocp_pw: ''
 ocp_host: 'https://ocp.mgt.devsecops.gov'
 docker_registry: 'docker.artifactory.apps.mgt.devsecops.gov'
 
@@ -7,9 +7,9 @@ install_dir: "/tmp/twistlock"
 twistlock_tarball: 'twistlock_2_5_121.tar.gz'
 twistlock_script: 'twistlock-openshift.sh.j2'
 
-twistlock_project_name: 'twistlock-yel397-ky13'
-twistlock_access_token: 'kwa05xh2aoofqewzbygna9r0nd10zydt'
-twistlock_license_key: '1n+pqPg1BcuJqfc4/N1ZmATXY3rbmJLaQ1oLeiY1RNAIFDU9uXIq9CB+rurDgWP0iICGTehaRrvQaBUwrJhpiRR6E4Nd3lHIZgK0IBfHgT7EA6EnkAXqzQJQYEnDLQdTkytCSeFyzF/5R6Z84+kxeuj8JollwOrB/jHGy482hweRayLyjAc2N6Bw/Euy6cEzJiZ5IpFh4kYry1wf5isslCOQ0vkLPzKO4Gze2o2Nz/dRuAT83djtW1YCysrox1LAyxeIntr7sXUpHArex7K9P3tAyEGGghS3sxJLWRmnBy3lPvbFFLeMS2xEIako4jUeAefxMc9qbQcuX9cpfVbpnqpQwe6XbLEYz4uR8kEuxWacXTFPIC7P+ybtVJURokntGQxuRosnisG9CLNRRl30WEXLlgJO6ooQwpqnwXc3FU7LVqfFToM7zsezLcY4c2ugVPv9PF0HnNRKifE9ed4LUiFNxj5H73bpDhJDPJMkkn0SiuFJEddA0rpCeQkuAK9TLzBdT/N22CFpAoeNTB05hqD1FQDaouvdfMl58Kme56/BXz7CqJw4tTw3zOYCtSGUjxt4LKu1pU9C2vrmBDTSZhRJqohZnC3S82JANOaiFawla5ry/yLxOsadlIET8DHMl9wj65DEAXVhwxWJeUUMcHwqSlLHrUInjzv5ukHz7/8='
+twistlock_project_name: 'twistlock'
+twistlock_access_token: ''
+twistlock_license_key: ''
 
 twistlock_ocp_objects: ['twistlock-console-route.yml', 'twistlock-defender-route.yml', 'twistlock-console-sa.yml', 'twistlock-service-sa.yml']
 twistlock_console_user: 'admin'
