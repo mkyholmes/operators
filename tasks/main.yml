@@ -14,10 +14,11 @@
     mode: 0755
 
 ## manually copied to ocp-master-001.ecicd because the tarball was too large for github
-#- name: unpack the twistlock tarball on ocp master
-#  unarchive:
-#    src: "files/{{ twistlock_tarball }}"
-#    dest: "{{ install_dir }}"
+- name: unpack the twistlock tarball on ocp master
+  unarchive:
+    src: "{{ install_dir }}/{{ twistlock_tarball }}"
+    dest: "{{ install_dir }}"
+    remote_src: yes
 
 - name: add policy to allow run as anyuid
   shell: "oc adm policy add-scc-to-user anyuid -z default -n {{ twistlock_project_name }}"
