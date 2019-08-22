@@ -1,19 +1,20 @@
 ocp_user: 'kritchie'
 ocp_pw: ''
-ocp_host: 'https://ocp.mgt.devsecops.gov'
-docker_registry: 'docker.artifactory.apps.mgt.devsecops.gov'
+ocp_host: ''
+docker_registry: ''
 
 install_dir: "/tmp/twistlock"
 twistlock_tarball: 'twistlock_2_5_121.tar.gz'
 twistlock_script: 'twistlock-openshift.sh.j2'
 
 twistlock_project_name: 'twistlock'
+env: ''
 twistlock_access_token: ''
 twistlock_license_key: ''
 
 twistlock_ocp_objects: ['twistlock-console-route.yml', 'twistlock-defender-route.yml', 'twistlock-console-sa.yml', 'twistlock-service-sa.yml']
 twistlock_console_user: 'admin'
 twistlock_console_password: 'admin'
-twistlock_external_route: "{{ twistlock_project_name }}.apps.mgt.devsecops.gov"
+twistlock_external_route: "{{ twistlock_project_name }}.{{ env }}"
 twistlock_public_registry: 'registry.twistlock.com'
 storage_class: 'glusterfs-storage'
