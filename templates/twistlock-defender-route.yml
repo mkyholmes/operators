@@ -12,7 +12,7 @@ objects:
       name: console
     name: twistlock-defender
   spec:
-    host: {{ twistlock_project_name }}-defender.apps.mgt.devsecops.gov
+    host: {{ twistlock_project_name }}-defender.{{ env }}
     port:
       targetPort: communication-port
     tls:
@@ -29,6 +29,6 @@ objects:
       - lastTransitionTime: 2018-12-03T22:08:48Z
         status: "True"
         type: Admitted
-      host: {{ twistlock_project_name }}-defender.apps.mgt.devsecops.gov
+      host: {{ twistlock_project_name }}-defender.{{ env }}
       routerName: router
       wildcardPolicy: None
