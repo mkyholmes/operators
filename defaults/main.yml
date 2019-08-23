@@ -3,7 +3,7 @@ ocp_pw: ''
 ocp_host: ''
 docker_registry: ''
 
-install_dir: "/tmp/twistlock"
+install_dir: "/root/twistlock"
 twistlock_tarball: 'twistlock_19_07_358.tar.gz'
 twistlock_script: 'twistlock-openshift.sh.j2'
 
