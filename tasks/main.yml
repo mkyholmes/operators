@@ -47,15 +47,12 @@
 
 - name: add policy to grant privileged status to twistlock-console service account
   shell: "oc adm policy add-scc-to-user privileged -z twistlock-console -n {{ twistlock_project_name }}"
-  
-- name: remove twistlock node-selector value
-  shell: "oc annotate namespace {{ twistlock_project_name }} openshift.io/node-selector=\"\""
-  
-- name: add a node label to Deploy_Twistlock=true
-  shell: " oc label node ocp-compute-ocs-001.ecicd.dso.ncps.us-cert.gov Deploy_Twistlock=true"
 
 - name: add policy to grant privileged status to twistlock-service service account
   shell: "oc adm policy add-scc-to-user privileged -z twistlock-service -n {{ twistlock_project_name }}"
+  
+- name: remove twistlock node-selector value
+  shell: "oc annotate namespace {{ twistlock_project_name }} openshift.io/node-selector=\"\""
 
 - name: run twistlock-openshift.sh on the ocp master 
   shell: "./twistlock-openshift.sh"
