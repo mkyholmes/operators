@@ -44,4 +44,4 @@ fi
 
 # deploy the defenders
 {{ install_dir}}/linux/twistcli defender export openshift --address https://$TWISTLOCK_EXTERNAL_ROUTE --cluster-address $(oc get service twistlock-console -n $TWISTLOCK_NAMESPACE | awk '{print $3}' | tail -n +2) --namespace $TWISTLOCK_NAMESPACE --image-name $IMAGE_REGISTRY_INTERNAL/twistlock/defender:defender_$TWISTLOCK_VERSION --user $TWISTLOCK_CONSOLE_USER --password $TWISTLOCK_CONSOLE_PASSWORD echo "$daemonset_file" 
-oc create -f {{ install_dir }}/daemonset.yaml
+oc create -f {{ install_dir }}/defender.yaml
